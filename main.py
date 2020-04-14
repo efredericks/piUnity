@@ -5,7 +5,7 @@ from sense_hat import SenseHat
 
 # Initialize sense hat
 sh = SenseHat()
-sh.set_imu_config(False, True, False)
+#sh.set_imu_config(False, True, False)
 
 IP_ADDR = "192.168.1.18"
 IP_PORT = 50001
@@ -13,10 +13,11 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 while True:
   try:
-    gyro = sh.get_gyroscope()
+    orientation = sh.get_orientation()
+    #gyro = sh.get_gyroscope()
     #txData = '{"pitch":' + str(gyro['pitch']) + ',"roll":' + str(gyro['roll']) + ',"yaw":' + str(gyro['yaw']) + '}'
     
-    txData = "{pitch};{roll};{yaw}".format(**gyro)
+    txData = "{pitch};{roll};{yaw}".format(**orientation)#gyro)
     print("Sending [{0}] to [{1}:{2}]".format(txData, IP_ADDR, IP_PORT))
     sock.sendto(bytes(txData, "utf-8"), (IP_ADDR, IP_PORT))
     #time.sleep(1)
