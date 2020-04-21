@@ -1,77 +1,44 @@
+"""
+main.py: Main python script for the piUnity project.  
+
+This script creates a UDP socket between a Raspberry Pi (outfitted with a Sense hat)
+and blasts the orientation data over to a Unity application.
+
+"""
+
+__author__  = 'Erik Fredericks'
+__version__ = '0.1'
+
 import socket
-import time
-import json
+import argparse
 from sense_hat import SenseHat
 
-# Initialize sense hat
+# Initialize sense hat and arguments
 sh = SenseHat()
-#sh.set_imu_config(False, True, False)
 
-IP_ADDR = "192.168.1.18"
-IP_PORT = 50001
+# Handle arguments
+parser = argparse.ArgumentParser(description="piUnity Sensor Controller")
+parser.add_argument("--ip", required=True)
+parser.add_argument("--port", required=True, type=int)
+parser.add_argument("--debug", action="store_true")
+args = parser.parse_args()
+
+
+# Setup socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+print("Socket created - {0}:{1}".format(args.ip, args.port))
 
+# Run forever!
 while True:
   try:
     orientation = sh.get_orientation()
-    #gyro = sh.get_gyroscope()
-    #txData = '{"pitch":' + str(gyro['pitch']) + ',"roll":' + str(gyro['roll']) + ',"yaw":' + str(gyro['yaw']) + '}'
-    
-    txData = "{pitch};{roll};{yaw}".format(**orientation)#gyro)
-    print("Sending [{0}] to [{1}:{2}]".format(txData, IP_ADDR, IP_PORT))
-    sock.sendto(bytes(txData, "utf-8"), (IP_ADDR, IP_PORT))
-    #time.sleep(1)
+    txData = "{roll};{pitch};{yaw}".format(**orientation)#gyro)
+    sock.sendto(bytes(txData, "utf-8"), (args.ip, args.port))
+
+    if args.debug:
+      print("Sending [{0}] to [{1}:{2}]".format(txData, args.ip, args.port))
 
   except Exception as e:
     print("Error: {0}".format(e))
     sock.close()
     break
-
-
-"""
-backlog = 1
-size = 1024
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind(('0.0.0.0', 50001))
-s.listen(backlog)
-
-while True:
-  try:
-    client, address = s.accept()
-    bytes_received = client.recv(size)
-
-    gyro = sh.get_gyroscope()
-    txData = "{pitch};{roll};{yaw}".format(**gyro)
-    client.send(txData.encode())
-    time.sleep(1)
-  except Exception as e:
-    print("Error: {0}".format(e))
-    client.close()
-    break
-
-"""
-"""
-try:
-  print("I'm waiting...")
-  client, address = s.accept()
-
-  while True:
-    data = client.recv(size)
-    if data:
-      print(str(data))
-
-    gyro = sh.get_gyroscope()
-    txData = "{pitch};{roll};{yaw}".format(**gyro)
-    print(txData)
-    client.sendall(txData)#txData);
-    #print("p: {pitch}, r: {roll}, y: {yaw}".format(**gyro))
- 
-    
-
-except:
-  print("Closing socket")
-  client.close()
-  s.close()
-"""
