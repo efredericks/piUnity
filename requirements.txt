@@ -1,2 +1,0 @@
-sense-hat==2.2.0
-argparse==1.4.0
