@@ -32,7 +32,7 @@ print("Socket created - {0}:{1}".format(args.ip, args.port))
 while True:
   try:
     orientation = sh.get_orientation()
-    txData = "{roll};{pitch};{yaw}".format(**orientation)#gyro)
+    txData = "{roll};{pitch};{yaw}".format(**orientation)
     sock.sendto(bytes(txData, "utf-8"), (args.ip, args.port))
 
     if args.debug:
