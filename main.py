@@ -3,7 +3,6 @@ main.py: Main python script for the piUnity project.
 
 This script creates a UDP socket between a Raspberry Pi (outfitted with a Sense hat)
 and blasts the orientation data over to a Unity application.
-
 """
 
 __author__  = 'Erik Fredericks'
