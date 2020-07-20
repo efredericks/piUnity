@@ -1,5 +1,7 @@
 ﻿/*
- 
+    // RPIComm.cs
+    // Handles UDP communication between Unity and a Raspberry Pi outfitted with a Sense hat
+
     -----------------------
     UDP-Receive (send to)
     -----------------------
@@ -11,11 +13,11 @@
    
     // send
     // nc -u 127.0.0.1 8051
- 
+
+    Code based on this thread: https://forum.unity.com/threads/simple-udp-implementation-send-read-via-mono-c.15900/ 
 */
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
  
 using System;
 using System.Collections;
@@ -82,25 +84,26 @@ public class RPIComm : MonoBehaviour {
         {
             StopNetwork();
             Debug.Log("Loading Scene");
-            SceneManager.LoadScene("MarbleMaze");//, LoadSceneMode.Additive);
+            SceneManager.LoadScene("MarbleMaze");
         }
         else if (Input.GetKeyDown("m"))
         {
             StopNetwork();
             Debug.Log("Loading Scene");
-            SceneManager.LoadScene("ForestMaze");//, LoadSceneMode.Additive);
+            SceneManager.LoadScene("ForestMaze");
         }
 
         if (lastReceivedUDPPacket != "")
         {
           string[] parsed_data = lastReceivedUDPPacket.Split(';');
           transform.localEulerAngles = new Vector3(float.Parse(parsed_data[1]),  // pitch
-                                                    float.Parse(parsed_data[2]),  // yaw
+                                                   float.Parse(parsed_data[2]),  // yaw
                                                    float.Parse(parsed_data[0])); // roll
           Debug.Log("Roll [" + parsed_data[0].ToString() + ", Pitch [" + parsed_data[1].ToString() + "], Yaw [" + parsed_data[2] + "]"); 
         }
     }
    
+   /*
     // OnGUI
     void OnGUI()
     {
@@ -112,7 +115,7 @@ public class RPIComm : MonoBehaviour {
 //                    + "\nLast Packet: \n"+ lastReceivedUDPPacket
 //                    + "\n\nAll Messages: \n"+allReceivedUDPPackets
 //                ,style);
-    }
+    }*/
        
     // init
     private void init()
@@ -121,13 +124,12 @@ public class RPIComm : MonoBehaviour {
         print("UDPSend.init()");
        
         // define port
-        port = 50001;//8051;
+        port = 50001;
  
         // status
         print("Sending to 127.0.0.1 : "+port);
         print("Test-Sending to this Port: nc -u 127.0.0.1  "+port+"");
  
-   
         // ----------------------------
         // Abhören
         // ----------------------------
@@ -142,12 +144,10 @@ public class RPIComm : MonoBehaviour {
  
     // receive thread
     private  void ReceiveData()
-    {
- 
+    { 
         client = new UdpClient(port);
         while (true)
-        {
- 
+        { 
             try
             {
                 // Bytes empfangen.
@@ -159,8 +159,6 @@ public class RPIComm : MonoBehaviour {
  
                 // Den abgerufenen Text anzeigen.
                 print(">> " + text);
-
-
 
                 // latest UDPpacket
                 lastReceivedUDPPacket=text;
